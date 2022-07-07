@@ -1,52 +1,56 @@
 import { Button, Modal, Input } from 'antd'
-import {useState} from 'react'
+import axios from 'axios'
+import {useState, useEffect} from 'react'
 
 import Blog from '../../component/blog'
+import './ctyle.css'
 
 function Blogs() {
-    const [blogs, setBlogs] = useState([
-        {
-        title: 'Blog 1',
-        desc: 'Blog desc 1',
-        check: false
-        },
-        {
-        title: 'Blog 2',
-        desc: 'Blog desc 2',
-        check: false
-        },
-        {
-        title: 'Blog 3',
-        desc: 'Blog desc 3',
-        check: false
-        },
-])
+    const [blogs, setBlogs] = useState([])
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [blog , setBlog] = useState({title:'',desc:''})
+    const [editIndex, setEditIndex] = useState()
+    useEffect( () => {
+        axios.get('https://jsonplaceholder.typicode.com/posts').then(res => 
+        setBlogs(res.data.map(item => {
+            return{
+                title: item.id,
+                desc: item.title
+            }
+        }))
+        )
+    }, [])
     const handlChange = (e) => {
         setBlog({...blog, [e.target.name]: e.target.value})
     }
 
     const handleOk = () => {
-        setBlogs([...blogs,blog])
-        asd()
+        if(editIndex >= 0 ) {
+            blogs.splice(editIndex, 1, blog)
+        } else setBlogs([...blogs,blog])
+        
         handleCancel()
     }
 
     const handleCancel = () => {
         setIsModalVisible(false)
+        clear()
     }
 
-    const openModal = () => {
+    const openModal = (index) => {
+        if(index >= 0){
+            setBlog(blogs[index])
+            setEditIndex(index)
+        }
         setIsModalVisible(true)
     }
 
-    const asd = () => {
+    const clear = () => {
         setBlog({})
     }
 
-    const del = (i) => {
-        setBlogs([...blogs].filter((item, index) => index != i ))
+    const handleDelete = (i) => {
+        setBlogs([...blogs].filter((item, index) => index !== i ))
     } 
 
     const read = (index) => {
@@ -57,11 +61,13 @@ function Blogs() {
     }
 
 
-    const blogItems = blogs.map((item, i) => <Blog read={read} del={del} index={i} blog={item} key={i}/>)
+    const blogItems = blogs.map((item, i) => <Blog read={read} openModal={openModal} handleDelete={handleDelete} index={i} blog={item} key={i}/>)
     return(
         <div>
             <Button onClick={openModal}>Add blog</Button>
-        {blogItems}
+            <div className='container'>
+            {blogItems}
+            </div>
         <Modal title="Basic Modal" visible={isModalVisible} onOk={handleOk} onCancel={handleCancel}>
         <Input value={blog.title} onChange={handlChange} name='title' placeholder='Title'/>
         <Input value={blog.desc} onChange={handlChange} name='desc' placeholder='Description'/>
