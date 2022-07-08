@@ -1,8 +1,8 @@
 import {Button, Card} from "antd"
 // import Edit from "../edit/edit"
 
-function Blog({blog, index, handleDelete, openModal, read}) {
-    const {title ,desc, check} = blog
+function Blog({blog, index, handleDelete, openModal,}) {
+    const {title ,desc, url, check} = blog
     return(
             <div>
             <Card
@@ -16,6 +16,7 @@ function Blog({blog, index, handleDelete, openModal, read}) {
                 }}
                 >
                 <p>{desc}</p> 
+                <img src={url} alt='цвет'/>
                 {check ? <p>прочитано </p>: ""}
             </Card>
             </div>
