@@ -10,15 +10,25 @@ function Blogs() {
     const [isModalVisible, setIsModalVisible] = useState(false)
     const [blog , setBlog] = useState({title:'',desc:''})
     const [editIndex, setEditIndex] = useState()
+    const [img, setImg] = useState()
     useEffect( () => {
-        axios.get('https://jsonplaceholder.typicode.com/posts').then(res => 
+        axios.get('https://jsonplaceholder.typicode.com/photos',{params:{_limit: 15}}).then(res => 
         setBlogs(res.data.map(item => {
             return{
                 title: item.id,
-                desc: item.title
+                desc: item.title,
+                url: item.thumbnailUrl
             }
         }))
         )
+        // axios.get('https://jsonplaceholder.typicode.com/photos',{params:{_limit: 100}}).then(res =>
+        // setImg(res.data.map(item => {
+        //     return{
+        //         asd: item.thumbnailUrl
+        //     }
+        // }))
+        // )
+        
     }, [])
     const handlChange = (e) => {
         setBlog({...blog, [e.target.name]: e.target.value})
@@ -61,7 +71,7 @@ function Blogs() {
     }
 
 
-    const blogItems = blogs.map((item, i) => <Blog read={read} openModal={openModal} handleDelete={handleDelete} index={i} blog={item} key={i}/>)
+    const blogItems = blogs.map((item, i) => <Blog img={img} read={read} openModal={openModal} handleDelete={handleDelete} index={i} blog={item} key={i}/>)
     return(
         <div>
             <Button onClick={openModal}>Add blog</Button>
